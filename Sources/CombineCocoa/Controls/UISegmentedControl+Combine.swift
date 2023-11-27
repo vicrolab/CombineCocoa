@@ -6,16 +6,20 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if !(os(iOS) && (arch(i386) || arch(arm)))
+#if canImport(Combine) && os(iOS)
 import Combine
 import UIKit
 
-@available(iOS 13.0, *)
-public extension UISegmentedControl {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UISegmentedControl {
     /// A publisher emitting selected segment index changes for this segmented control.
-    var selectedSegmentIndexPublisher: AnyPublisher<Int, Never> {
-        Publishers.ControlProperty(control: self, events: .defaultValueEvents, keyPath: \.selectedSegmentIndex)
-                  .eraseToAnyPublisher()
+    public var selectedSegmentIndexPublisher: AnyPublisher<Int, Never> {
+        Publishers.ControlProperty(
+            control: self,
+            events: .defaultValueEvents,
+            keyPath: \.selectedSegmentIndex
+        )
+        .eraseToAnyPublisher()
     }
 }
 #endif

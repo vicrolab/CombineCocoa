@@ -6,14 +6,14 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if !(os(iOS) && (arch(i386) || arch(arm)))
+#if canImport(Combine) && os(iOS)
 import Combine
 import UIKit
 
-@available(iOS 13.0, *)
-public extension UIPageControl {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UIPageControl {
     /// A publisher emitting current page changes for this page control.
-    var currentPagePublisher: AnyPublisher<Int, Never> {
+    public var currentPagePublisher: AnyPublisher<Int, Never> {
         publisher(for: \.currentPage).eraseToAnyPublisher()
     }
 }

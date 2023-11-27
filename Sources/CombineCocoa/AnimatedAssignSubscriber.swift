@@ -8,29 +8,34 @@
 
 import Foundation
 
-#if canImport(UIKit) && !(os(iOS) && (arch(i386) || arch(arm)))
+#if canImport(UIKit) && canImport(Combine)
 import Combine
 import UIKit
 
 /// A list of animations that can be used with `Publisher.assign(to:on:animation:)`
-@available(iOS 13.0, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum AssignTransition {
     public enum Direction {
         case top, bottom, left, right
     }
-
+    
     /// Flip from either bottom, top, left, or right.
     case flip(direction: Direction, duration: TimeInterval)
-
+    
     /// Cross fade with previous value.
     case fade(duration: TimeInterval)
-
+    
     /// A custom animation. Do not include your own code to update the target of the assign subscriber.
-    case animation(duration: TimeInterval, options: UIView.AnimationOptions, animations: () -> Void, completion: ((Bool) -> Void)?)
+    case animation(
+        duration: TimeInterval,
+        options: UIView.AnimationOptions,
+        animations: () -> Void,
+        completion: ((Bool) -> Void)?
+    )
 }
 
-@available(iOS 13.0, *)
-public extension Publisher where Self.Failure == Never {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Publisher where Self.Failure == Never {
     /// Behaves identically to `Publisher.assign(to:on:)` except that it allows the user to
     /// "wrap" emitting output in an animation transition.
     ///
@@ -52,10 +57,13 @@ public extension Publisher where Self.Failure == Never {
     ///     myLabel.center.x += 10.0
     ///   }, completion: nil))
     /// ```
-    func assign<Root: UIView>(to keyPath: ReferenceWritableKeyPath<Root, Self.Output>, on object: Root, animation: AssignTransition) -> AnyCancellable {
+    public func assign<Root: UIView>(
+        to keyPath: ReferenceWritableKeyPath<Root, Self.Output>,
+        on object: Root, animation: AssignTransition
+    ) -> AnyCancellable {
         var transition: UIView.AnimationOptions
         var duration: TimeInterval
-
+        
         switch animation {
         case .fade(let interval):
             duration = interval
@@ -64,37 +72,41 @@ public extension Publisher where Self.Failure == Never {
             duration = interval
             switch dir {
             case .bottom: transition = .transitionFlipFromBottom
-            case .top: transition    = .transitionFlipFromTop
-            case .left: transition   = .transitionFlipFromLeft
-            case .right: transition  = .transitionFlipFromRight
+            case .top: transition = .transitionFlipFromTop
+            case .left: transition = .transitionFlipFromLeft
+            case .right: transition = .transitionFlipFromRight
             }
         case let .animation(interval, options, animations, completion):
             // Use a custom animation.
             return handleEvents(
                 receiveOutput: { value in
-                    UIView.animate(withDuration: interval,
-                                   delay: 0,
-                                   options: options,
-                                   animations: {
-                                    object[keyPath: keyPath] = value
-                                    animations()
-                                   },
-                                   completion: completion)
-                    }
-                )
-                .sink { _ in }
+                    UIView.animate(
+                        withDuration: interval,
+                        delay: 0,
+                        options: options,
+                        animations: {
+                            object[keyPath: keyPath] = value
+                            animations()
+                        },
+                        completion: completion
+                    )
+                }
+            )
+            .sink { _ in }
         }
-
+        
         // Use one of the built-in transitions like flip or crossfade.
         return self
             .handleEvents(receiveOutput: { value in
-                UIView.transition(with: object,
-                                  duration: duration,
-                                  options: transition,
-                                  animations: {
-                                    object[keyPath: keyPath] = value
-                                  },
-                                  completion: nil)
+                UIView.transition(
+                    with: object,
+                    duration: duration,
+                    options: transition,
+                    animations: {
+                        object[keyPath: keyPath] = value
+                    },
+                    completion: nil
+                )
             })
             .sink { _ in }
     }

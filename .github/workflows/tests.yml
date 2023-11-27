@@ -16,10 +16,6 @@ jobs:
             destination: "name=iPhone 11"
     steps:
       - uses: actions/checkout@v2
-      - name: Make project
-        run: make project
-      - name: Install Pods
-        run: pod install --project-directory=Example
       - name: Run tests
         run: set -o pipefail && xcodebuild -workspace Example/Example.xcworkspace -scheme Example -enableCodeCoverage YES -sdk ${{ matrix.sdk }} -destination "${{ matrix.destination }}" test | xcpretty -c -r html --output logs/${{ matrix.platform }}.html
       - uses: codecov/codecov-action@v1.0.13
@@ -30,12 +26,3 @@ jobs:
         with:
           name: build-logs-${{ github.run_id }}
           path: logs
-  carthage:
-      name: "Carthage Test"
-      runs-on: macOS-latest
-      steps:
-        - uses: actions/checkout@v2
-        - name: Make project
-          run: make project
-        - name: Carthage build
-          run: carthage build --no-skip-current --platform iOS --configuration Release --project-directory ./

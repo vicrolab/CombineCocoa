@@ -6,16 +6,16 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if !(os(iOS) && (arch(i386) || arch(arm)))
+#if canImport(Combine) && os(iOS)
 import Combine
 import UIKit
 
-@available(iOS 13.0, *)
-public extension UIControl {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UIControl {
     /// A publisher emitting events from this control.
-    func controlEventPublisher(for events: UIControl.Event) -> AnyPublisher<Void, Never> {
+    public func controlEventPublisher(for events: UIControl.Event) -> AnyPublisher<Void, Never> {
         Publishers.ControlEvent(control: self, events: events)
-                  .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
 }
 #endif

@@ -6,24 +6,26 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if !(os(iOS) && (arch(i386) || arch(arm)))
+#if canImport(Combine) && os(iOS)
 import Combine
 import UIKit
 
-@available(iOS 13.0, *)
-public extension UIBarButtonItem {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UIBarButtonItem {
     /// A publisher which emits whenever this UIBarButtonItem is tapped.
-    var tapPublisher: AnyPublisher<Void, Never> {
-        Publishers.ControlTarget(control: self,
-                                 addTargetAction: { control, target, action in
-                                    control.target = target
-                                    control.action = action
-                                 },
-                                 removeTargetAction: { control, _, _ in
-                                    control?.target = nil
-                                    control?.action = nil
-                                 })
-                  .eraseToAnyPublisher()
-  }
+    public var tapPublisher: AnyPublisher<Void, Never> {
+        Publishers.ControlTarget(
+            control: self,
+            addTargetAction: { control, target, action in
+                control.target = target
+                control.action = action
+            },
+            removeTargetAction: { control, _, _ in
+                control?.target = nil
+                control?.action = nil
+            }
+        )
+        .eraseToAnyPublisher()
+    }
 }
 #endif

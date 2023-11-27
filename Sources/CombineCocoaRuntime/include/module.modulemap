@@ -1,0 +1,4 @@
+module CombineCocoaRuntime {
+    umbrella header "ObjcDelegateProxy.h"
+    export *
+}

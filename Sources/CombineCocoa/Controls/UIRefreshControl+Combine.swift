@@ -6,16 +6,20 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if !(os(iOS) && (arch(i386) || arch(arm)))
+#if canImport(Combine) && os(iOS)
 import Combine
 import UIKit
 
-@available(iOS 13.0, *)
-public extension UIRefreshControl {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UIRefreshControl {
     /// A publisher emitting refresh status changes from this refresh control.
-    var isRefreshingPublisher: AnyPublisher<Bool, Never> {
-        Publishers.ControlProperty(control: self, events: .defaultValueEvents, keyPath: \.isRefreshing)
-                  .eraseToAnyPublisher()
+    public var isRefreshingPublisher: AnyPublisher<Bool, Never> {
+        Publishers.ControlProperty(
+            control: self,
+            events: .defaultValueEvents,
+            keyPath: \.isRefreshing
+        )
+        .eraseToAnyPublisher()
     }
 }
 #endif

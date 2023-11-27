@@ -6,63 +6,63 @@
 //  Copyright © 2020 Combine Community. All rights reserved.
 //
 
-#if !(os(iOS) && (arch(i386) || arch(arm)))
+#if canImport(Combine) && os(iOS)
 import Combine
 import UIKit
 
 // MARK: - Gesture Publishers
-@available(iOS 13.0, *)
-public extension UITapGestureRecognizer {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UITapGestureRecognizer {
     /// A publisher which emits when this Tap Gesture Recognizer is triggered
-    var tapPublisher: AnyPublisher<UITapGestureRecognizer, Never> {
+    public var tapPublisher: AnyPublisher<UITapGestureRecognizer, Never> {
         gesturePublisher(for: self)
     }
 }
 
-@available(iOS 13.0, *)
-public extension UIPinchGestureRecognizer {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UIPinchGestureRecognizer {
     /// A publisher which emits when this Pinch Gesture Recognizer is triggered
-    var pinchPublisher: AnyPublisher<UIPinchGestureRecognizer, Never> {
+    public var pinchPublisher: AnyPublisher<UIPinchGestureRecognizer, Never> {
         gesturePublisher(for: self)
     }
 }
 
-@available(iOS 13.0, *)
-public extension UIRotationGestureRecognizer {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UIRotationGestureRecognizer {
     /// A publisher which emits when this Rotation Gesture Recognizer is triggered
-    var rotationPublisher: AnyPublisher<UIRotationGestureRecognizer, Never> {
+    public var rotationPublisher: AnyPublisher<UIRotationGestureRecognizer, Never> {
         gesturePublisher(for: self)
     }
 }
 
-@available(iOS 13.0, *)
-public extension UISwipeGestureRecognizer {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UISwipeGestureRecognizer {
     /// A publisher which emits when this Swipe Gesture Recognizer is triggered
-    var swipePublisher: AnyPublisher<UISwipeGestureRecognizer, Never> {
+    public var swipePublisher: AnyPublisher<UISwipeGestureRecognizer, Never> {
         gesturePublisher(for: self)
     }
 }
 
-@available(iOS 13.0, *)
-public extension UIPanGestureRecognizer {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UIPanGestureRecognizer {
     /// A publisher which emits when this Pan Gesture Recognizer is triggered
-    var panPublisher: AnyPublisher<UIPanGestureRecognizer, Never> {
+    public var panPublisher: AnyPublisher<UIPanGestureRecognizer, Never> {
         gesturePublisher(for: self)
     }
 }
 
-@available(iOS 13.0, *)
-public extension UIScreenEdgePanGestureRecognizer {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UIScreenEdgePanGestureRecognizer {
     /// A publisher which emits when this Screen Edge Gesture Recognizer is triggered
-    var screenEdgePanPublisher: AnyPublisher<UIScreenEdgePanGestureRecognizer, Never> {
+    public var screenEdgePanPublisher: AnyPublisher<UIScreenEdgePanGestureRecognizer, Never> {
         gesturePublisher(for: self)
     }
 }
 
-@available(iOS 13.0, *)
-public extension UILongPressGestureRecognizer {
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension UILongPressGestureRecognizer {
     /// A publisher which emits when this Long Press Recognizer is triggered
-    var longPressPublisher: AnyPublisher<UILongPressGestureRecognizer, Never> {
+    public var longPressPublisher: AnyPublisher<UILongPressGestureRecognizer, Never> {
         gesturePublisher(for: self)
     }
 }
@@ -71,17 +71,19 @@ public extension UILongPressGestureRecognizer {
 
 // A private generic helper function which returns the provided
 // generic publisher whenever its specific event occurs.
-@available(iOS 13.0, *)
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 private func gesturePublisher<Gesture: UIGestureRecognizer>(for gesture: Gesture) -> AnyPublisher<Gesture, Never> {
-    Publishers.ControlTarget(control: gesture,
-                             addTargetAction: { gesture, target, action in
-                                gesture.addTarget(target, action: action)
-                             },
-                             removeTargetAction: { gesture, target, action in
-                                gesture?.removeTarget(target, action: action)
-                             })
-              .subscribe(on: DispatchQueue.main)
-              .map { gesture }
-              .eraseToAnyPublisher()
+    Publishers.ControlTarget(
+        control: gesture,
+        addTargetAction: { gesture, target, action in
+            gesture.addTarget(target, action: action)
+        },
+        removeTargetAction: { gesture, target, action in
+            gesture?.removeTarget(target, action: action)
+        }
+    )
+    .subscribe(on: DispatchQueue.main)
+    .map { gesture }
+    .eraseToAnyPublisher()
 }
 #endif
