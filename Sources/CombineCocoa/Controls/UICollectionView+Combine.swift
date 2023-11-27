@@ -79,7 +79,7 @@ extension UICollectionView {
     }
     
     override var delegateProxy: DelegateProxy {
-        .createDelegateProxy(for: self)
+        CollectionViewDelegateProxy.createDelegateProxy(for: self)
     }
 }
 
